@@ -1,5 +1,8 @@
 # Загрузка модуля pygame.
 import pygame
+import os
+
+
 
 
 
@@ -31,6 +34,27 @@ ball_speed_y = 5
 
 player = pygame.Rect(20, 0, 20, 100)
 
+enemy = pygame.Rect(800 - 20 - 20, 0, 20, 100)
+
+# Ryuk
+
+ryuk_frames = os.listdir('assets/ryuk')
+
+ryuk_surfs = []
+for frame in ryuk_frames:
+    img = pygame.image.load(f'assets/ryuk/{frame}')
+    ryuk_surfs.append(img)
+
+
+# Звук/Sound
+
+bgm = pygame.mixer.Sound('assets/bgm_1.mp3')
+bgm.set_volume(0.2)
+bgm.play()
+
+
+ball_hit = pygame.mixer.Sound('assets/ball_hit.wav')
+ball_hit.set_volume(0.2)
 
 
 # Мышка
@@ -60,12 +84,17 @@ while running:
     ball.y = ball.y + ball_speed_y
 
 
-    if ball.x > 800 - 100:
-        ball_speed_x *= -1
+    if ball.x > 800 + 100:
+        ball.x = 800 / 2 - 50
+        ball.y = 600 / 2 - 50
+        ball_speed_x = 5
+        ball_speed_y = 5
 
     if ball.x < 0 - 200:
         ball.x = 800 / 2 - 50
         ball.y = 600 / 2 - 50
+        ball_speed_x = 5
+        ball_speed_y = 5
 
 
     if ball.y > 600 - 100:
@@ -77,14 +106,22 @@ while running:
 
 
     if ball.colliderect(player):
-        ball_speed_x *= -1
+        ball_speed_x *= -1.1
+        ball_hit.play()
 
-    
+    if ball.colliderect(enemy):
+        ball_speed_x *= -1.1
+        ball_hit.play()
 
 
     pygame.draw.ellipse(SCENE, [232, 143, 166], ball)
 
     pygame.draw.rect(SCENE, [132, 173, 184], player)
+
+    pygame.draw.rect(SCENE, [220, 220, 153], enemy)
+
+    # AI
+    enemy.y = ball.y
 
 
     keys = pygame.key.get_pressed()
